@@ -1,0 +1,30 @@
+{
+  "name": "express-server",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www",
+    "test": "node_modules/.bin/mocha $(find ./test/ -name '*.js') --recursive -w"
+  },
+  "dependencies": {
+    "body-parser": "~1.18.2",
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.6.9",
+    "express": "~4.15.5",
+    "jade": "~1.11.0",
+    "lodash": "^4.17.5",
+    "md5": "^2.2.1",
+    "morgan": "~1.9.0",
+    "mysql2": "^1.5.2",
+    "sequelize": "^4.33.4",
+    "serve-favicon": "~2.4.5"
+  },
+  "devDependencies": {
+    "gulp": "^4.0.0",
+    "gulp-coffee": "^3.0.2",
+    "gulp-watch": "^5.0.0",
+    "mocha": "^5.0.1",
+    "multer": "^1.3.0",
+    "tap": "^11.1.1"
+  }
+}
