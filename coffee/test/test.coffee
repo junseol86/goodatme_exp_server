@@ -1,6 +1,6 @@
 assert = require 'assert'
 sequaelize = require('../secrets/database').getSql()
-util = require '../tools/util'
+util = require '../scripts/tools/util'
 
 describe 'PRINT', () ->
   util.setDateProto()

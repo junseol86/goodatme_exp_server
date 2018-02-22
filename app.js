@@ -5,8 +5,9 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
-var index = require('./routes/index');
-var image_upload = require('./routes/image_upload');
+var index = require('./scripts/routes/index');
+var rt_image_upload = require('./scripts/routes/image_upload');
+var rt_account = require('./scripts/routes/account');
 
 var app = express();
 
@@ -23,7 +24,8 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
-app.use('/image', image_upload);
+app.use('/image', rt_image_upload);
+app.use('/account', rt_account);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
