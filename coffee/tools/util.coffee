@@ -1,4 +1,3 @@
-
 exports.setDateProto = () ->
   Date.prototype.getTimeString = ->
     timeString = this.getFullYear() + "-"
@@ -18,12 +17,18 @@ exports.setDateProto = () ->
     timeString += this.getSeconds()
     timeString
 
-exports.createSalt = () ->
+randomChars = (length) ->
   result = ""
   letterSet = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-  for [0..19]
+  for [0..length - 1]
     result = result += letterSet[Math.floor(Math.random() * letterSet.length)]
   result
+
+exports.createSalt = () ->
+  randomChars(20)
+
+exports.createToken = () ->
+  randomChars(40)
 
 exports.hashMD5 = (str) ->
   md5 = require('md5')

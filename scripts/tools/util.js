@@ -1,3 +1,5 @@
+var randomChars;
+
 exports.setDateProto = function() {
   Date.prototype.getTimeString = function() {
     var timeString;
@@ -21,14 +23,22 @@ exports.setDateProto = function() {
   };
 };
 
-exports.createSalt = function() {
-  var i, letterSet, result;
+randomChars = function(length) {
+  var i, letterSet, ref, result;
   result = "";
   letterSet = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  for (var i = 0; i <= 19; i++) {
+  for (i = 0, ref = length - 1; undefined !== 0 && (0 <= ref ? 0 <= i && i <= ref : 0 >= i && i >= ref); 0 <= ref ? i++ : i--) {
     result = result += letterSet[Math.floor(Math.random() * letterSet.length)];
   }
   return result;
+};
+
+exports.createSalt = function() {
+  return randomChars(20);
+};
+
+exports.createToken = function() {
+  return randomChars(40);
 };
 
 exports.hashMD5 = function(str) {

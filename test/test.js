@@ -11,6 +11,7 @@ describe('PRINT', function() {
   console.log(new Date().getTimeString());
   console.log(new Date().getTimedFileName());
   console.log(util.createSalt());
+  console.log(util.createToken());
   console.log(util.hashMD5("HELLOeBcJne7I9C1wz6LHKabh"));
   return sequaelize.authenticate().then(function() {
     return console.log('successful');

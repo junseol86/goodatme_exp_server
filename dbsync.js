@@ -5,3 +5,7 @@ var User = account.user;
 User.sync({force: true}).then(() => {
   console.log("TABLE USER CREATED");
 });
+var Token = account.token;
+Token.sync({force: true}).then(() => {
+  console.log("TABLE TOKEN CREATED");
+});

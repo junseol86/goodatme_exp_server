@@ -16,6 +16,10 @@ module.exports = {
       unique: true,
       allowNull: false
     },
+    nickname: {
+      type: Sequelize.STRING,
+      allowNull: false
+    },
     salt: {
       type: Sequelize.STRING,
       allowNull: false
@@ -31,6 +35,20 @@ module.exports = {
       type: Sequelize.STRING
     },
     from_id: {
+      type: Sequelize.STRING
+    }
+  }),
+  token: sqlz.define('token', {
+    idx: {
+      type: Sequelize.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
+    },
+    user_idx: {
+      type: Sequelize.INTEGER,
+      unique: true
+    },
+    token: {
       type: Sequelize.STRING
     }
   })
