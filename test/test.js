@@ -13,6 +13,7 @@ describe('PRINT', function() {
   console.log(util.createSalt());
   console.log(util.createToken());
   console.log(util.hashMD5("HELLOeBcJne7I9C1wz6LHKabh"));
+  console.log(util.dateBefore(7));
   return sequaelize.authenticate().then(function() {
     return console.log('successful');
   }).catch(function() {

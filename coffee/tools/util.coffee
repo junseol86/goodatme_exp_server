@@ -33,3 +33,9 @@ exports.createToken = () ->
 exports.hashMD5 = (str) ->
   md5 = require('md5')
   return md5(str)
+
+exports.dateBefore = (offset) ->
+  dateformat = require 'dateformat'
+  date = new Date()
+  date.setDate(date.getDate() - offset)
+  dateformat date, 'yyyy-mm-dd HH:mm:ss'

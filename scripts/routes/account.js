@@ -1,8 +1,12 @@
-var Token, User, account, checkEmailExists, createAccount, createToken, express, login, removeToken, router, sequaelize, util;
+var Op, Sequelize, Token, User, account, accountToReturn, checkEmailExists, checkToken, createAccount, createToken, express, login, removeToken, router, sequaelize, util;
 
 express = require('express');
 
 router = express.Router();
+
+Sequelize = require('sequelize');
+
+Op = Sequelize.Op;
 
 sequaelize = require('../../secrets/database').getSql();
 
@@ -37,6 +41,11 @@ router.post('/register', function(req, res) {
 // 이메일 계정 존재 여부 확인
 router.get('/login', function(req, res) {
   return login(req, res);
+});
+
+// 토큰으로 접근
+router.get('/access', function(req, res) {
+  return checkToken(req, res);
 });
 
 // 이메일 계정 존재 여부 확인
@@ -94,6 +103,21 @@ removeToken = function(req, res, user, func) {
   }).then(func);
 };
 
+// 반환할 유저정보와 토큰
+accountToReturn = function(user, token) {
+  return {
+    email: user.email,
+    nickname: user.nickname,
+    type: user.type,
+    shape: user.shape,
+    color_str: user.color_str,
+    color_r: user.color_r,
+    color_g: user.color_g,
+    color_b: user.color_b,
+    token: token.token
+  };
+};
+
 // 토큰 생성
 createToken = function(req, res, user) {
   // 해당 아이디의 토큰 삭제
@@ -103,8 +127,22 @@ createToken = function(req, res, user) {
       user_idx: user.idx,
       token: util.createToken()
     }).then(function(token) {
-      return res.send(token.token);
+      return res.send(accountToReturn(user, token));
     });
+  });
+};
+
+// 토큰 유효 확인
+checkToken = function(req, res) {
+  return Token.findAndCountAll({
+    where: {
+      token: req.get('token'),
+      createdAt: {
+        [Op.gt]: util.dateBefore(7)
+      }
+    }
+  }).then(function(tokens) {
+    return res.send(tokens);
   });
 };
 

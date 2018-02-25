@@ -11,6 +11,11 @@ module.exports = {
     type: {type: Sequelize.STRING}
     from: {type: Sequelize.STRING}
     from_id: {type: Sequelize.STRING}
+    shape: {type: Sequelize.STRING}
+    color_str: {type: Sequelize.STRING}
+    color_r: {type: Sequelize.INTEGER}
+    color_g: {type: Sequelize.INTEGER}
+    color_b: {type: Sequelize.INTEGER}
   }
   token: sqlz.define 'token', {
     idx:  {type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true}

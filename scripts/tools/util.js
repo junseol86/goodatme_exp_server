@@ -46,3 +46,11 @@ exports.hashMD5 = function(str) {
   md5 = require('md5');
   return md5(str);
 };
+
+exports.dateBefore = function(offset) {
+  var date, dateformat;
+  dateformat = require('dateformat');
+  date = new Date();
+  date.setDate(date.getDate() - offset);
+  return dateformat(date, 'yyyy-mm-dd HH:mm:ss');
+};

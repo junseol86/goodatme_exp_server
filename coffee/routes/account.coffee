@@ -1,5 +1,7 @@
 express = require 'express'
 router = express.Router()
+Sequelize = require 'sequelize'
+Op = Sequelize.Op
 sequaelize = require('../../secrets/database').getSql()
 util = require '../tools/util'
 account = require '../models/account'
@@ -24,6 +26,10 @@ router.post '/register', (req, res) ->
 # 이메일 계정 존재 여부 확인
 router.get '/login', (req, res) ->
   login req, res
+
+# 토큰으로 접근
+router.get '/access', (req, res) ->
+  checkToken req, res
 
 
 # 이메일 계정 존재 여부 확인
@@ -63,6 +69,20 @@ removeToken = (req, res, user, func) ->
   Token.destroy({where: {user_idx: user.idx}})
   .then func
 
+# 반환할 유저정보와 토큰
+accountToReturn = (user, token) ->
+  {
+    email: user.email
+    nickname: user.nickname
+    type: user.type
+    shape: user.shape
+    color_str: user.color_str
+    color_r: user.color_r
+    color_g: user.color_g
+    color_b: user.color_b
+    token: token.token
+  }
+
 # 토큰 생성
 createToken = (req, res, user) ->
   # 해당 아이디의 토큰 삭제
@@ -72,7 +92,17 @@ createToken = (req, res, user) ->
       user_idx: user.idx
       token: util.createToken()
     }).then (token) ->
-      res.send token.token
+      res.send accountToReturn user, token
+
+# 토큰 유효 확인
+checkToken = (req, res) ->
+  Token.findAndCountAll({
+    where: {
+      token: req.get('token')
+      createdAt: {[Op.gt] : (util.dateBefore 7)}
+    }
+  }).then (tokens) ->
+    res.send tokens
 
 module.exports = router
 

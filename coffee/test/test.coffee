@@ -9,6 +9,7 @@ describe 'PRINT', () ->
   console.log util.createSalt()
   console.log util.createToken()
   console.log util.hashMD5 "HELLOeBcJne7I9C1wz6LHKabh"
+  console.log util.dateBefore 7
   sequaelize.authenticate().then(() ->
     console.log 'successful').catch(() ->
     console.log 'failed')
