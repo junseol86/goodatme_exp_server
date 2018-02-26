@@ -1,4 +1,4 @@
-var Op, Sequelize, Token, User, account, accountToReturn, checkEmailExists, checkToken, createAccount, createToken, express, login, removeToken, router, sequaelize, util;
+var Op, Sequelize, Token, User, account, accountToReturn, checkEmailExists, checkToken, checkUserIdxExists, createAccount, express, login, refreshToken, removeToken, router, sequaelize, util;
 
 express = require('express');
 
@@ -45,8 +45,21 @@ router.get('/login', function(req, res) {
 
 // 토큰으로 접근
 router.get('/access', function(req, res) {
-  return checkToken(req, res);
+  return checkToken(req, res, function(account, user) {
+    return res.send(account);
+  });
 });
+
+// 인덱스 계정 존재 여부 확인
+checkUserIdxExists = function(req, res, idx, func) {
+  var user;
+  return user = User.findAndCountAll({
+    where: {
+      idx: idx
+    }
+  }).then(func);
+};
+
 
 // 이메일 계정 존재 여부 확인
 checkEmailExists = function(req, res, email, func) {
@@ -80,15 +93,17 @@ login = function(req, res) {
     var user;
     // 아이디가 없을 경우
     if (users.count === 0) {
-      return res.status(403).send('LOGIN FAILED');
+      return res.status(403).send('이메일을 확인해 주세요.');
     } else {
       user = users.rows[0];
       // 비밀번호가 틀렸을 경우
       if (util.hashMD5(req.get('password') + user.salt) !== user.hash) {
-        return res.status(403).send('LOGIN FAILED');
+        return res.status(403).send('패스워드를 확인해 주세요.');
       } else {
         // 토큰 생성
-        return createToken(req, res, user);
+        return refreshToken(req, res, user, function(token) {
+          return res.send(accountToReturn(user, token));
+        });
       }
     }
   });
@@ -119,21 +134,19 @@ accountToReturn = function(user, token) {
 };
 
 // 토큰 생성
-createToken = function(req, res, user) {
+refreshToken = function(req, res, user, func) {
   // 해당 아이디의 토큰 삭제
   return removeToken(req, res, user, function() {
     // 토큰 생성 후 반환
     return Token.create({
       user_idx: user.idx,
       token: util.createToken()
-    }).then(function(token) {
-      return res.send(accountToReturn(user, token));
-    });
+    }).then(func);
   });
 };
 
 // 토큰 유효 확인
-checkToken = function(req, res) {
+checkToken = function(req, res, func) {
   return Token.findAndCountAll({
     where: {
       token: req.get('token'),
@@ -142,7 +155,25 @@ checkToken = function(req, res) {
       }
     }
   }).then(function(tokens) {
-    return res.send(tokens);
+    var token;
+    if (tokens.count === 0) {
+      return res.status(403).send("다시 로그인해주세요.");
+    } else {
+      token = tokens.rows[0];
+      return checkUserIdxExists(req, res, token.user_idx, function(users) {
+        var user;
+        if (users.count === 0) {
+          return res.status(403).send("다시 로그인해주세요.");
+        } else {
+          user = users.rows[0];
+          return refreshToken(req, res, user, function(token) {
+            account = accountToReturn(user, token);
+            // 토큰을 확인하여 갱신하고 사용자 정보를 획득한 뒤 주어진 함수 실행
+            return func(account, user);
+          });
+        }
+      });
+    }
   });
 };
 
