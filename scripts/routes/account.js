@@ -45,7 +45,7 @@ router.get('/login', function(req, res) {
 
 // 토큰으로 접근
 router.get('/access', function(req, res) {
-  return checkToken(req, res, function(account, user) {
+  return checkToken(req, res, req.get('token'), function(account, user) {
     return res.send(account);
   });
 });
@@ -89,7 +89,7 @@ createAccount = function(req, res) {
 
 // 로그인 - 이메일과 비밀번호 확인
 login = function(req, res) {
-  return checkEmailExists(req, res, req.get('email'), function(users) {
+  return checkEmailExists(req, res, req.get('email', function(users) {
     var user;
     // 아이디가 없을 경우
     if (users.count === 0) {
@@ -106,7 +106,7 @@ login = function(req, res) {
         });
       }
     }
-  });
+  }));
 };
 
 // 토큰 삭제
@@ -146,16 +146,15 @@ refreshToken = function(req, res, user, func) {
 };
 
 // 토큰 유효 확인
-checkToken = function(req, res, func) {
+checkToken = function(req, res, token, func) {
   return Token.findAndCountAll({
     where: {
-      token: req.get('token'),
+      token: token,
       createdAt: {
         [Op.gt]: util.dateBefore(7)
       }
     }
   }).then(function(tokens) {
-    var token;
     if (tokens.count === 0) {
       return res.status(403).send("다시 로그인해주세요.");
     } else {

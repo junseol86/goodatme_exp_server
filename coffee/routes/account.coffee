@@ -29,7 +29,7 @@ router.get '/login', (req, res) ->
 
 # 토큰으로 접근
 router.get '/access', (req, res) ->
-  checkToken req, res, (account, user) ->
+  checkToken req, res, req.get('token'), (account, user) ->
     res.send account
 
 # 인덱스 계정 존재 여부 확인
@@ -56,7 +56,7 @@ createAccount = (req, res) ->
 
 # 로그인 - 이메일과 비밀번호 확인
 login = (req, res) ->
-  checkEmailExists req, res, req.get('email'), (users) ->
+  checkEmailExists req, res, req.get 'email' , (users) ->
     # 아이디가 없을 경우
     if  users.count == 0
       res.status(403).send '이메일을 확인해 주세요.'
@@ -100,10 +100,10 @@ refreshToken = (req, res, user, func) ->
     }).then func
 
 # 토큰 유효 확인
-checkToken = (req, res, func) ->
+checkToken = (req, res, token, func) ->
   Token.findAndCountAll({
     where: {
-      token: req.get('token')
+      token: token
       createdAt: {[Op.gt] : (util.dateBefore 7)}
     }
   }).then (tokens) ->
