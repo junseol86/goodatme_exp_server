@@ -11,9 +11,7 @@ Token = account.token
 # 이메일 계정 존재 여부 확인
 router.get '/checkEmailExists/:email', (req, res) ->
   checkEmailExists req, res, req.params.email, (users) ->
-    res.send {
-      count: users.count
-    }
+    res.send users
 
 # 이메일 계정 존재 여부 확인 후 없으면 생성
 router.post '/register', (req, res) ->
@@ -23,7 +21,7 @@ router.post '/register', (req, res) ->
     else
       createAccount req, res
 
-# 이메일 계정 존재 여부 확인
+# 로그인 - 이메일과 비밀번호 확인
 router.get '/login', (req, res) ->
   login req, res
 
@@ -56,7 +54,7 @@ createAccount = (req, res) ->
 
 # 로그인 - 이메일과 비밀번호 확인
 login = (req, res) ->
-  checkEmailExists req, res, req.get 'email' , (users) ->
+  checkEmailExists req, res, req.get('email'), (users) ->
     # 아이디가 없을 경우
     if  users.count == 0
       res.status(403).send '이메일을 확인해 주세요.'
@@ -99,7 +97,7 @@ refreshToken = (req, res, user, func) ->
       token: util.createToken()
     }).then func
 
-# 토큰 유효 확인
+# 토큰을 확인하여 갱신하고 사용자 정보를 획득한 뒤 주어진 함수 실행
 checkToken = (req, res, token, func) ->
   Token.findAndCountAll({
     where: {
@@ -107,18 +105,20 @@ checkToken = (req, res, token, func) ->
       createdAt: {[Op.gt] : (util.dateBefore 7)}
     }
   }).then (tokens) ->
+    # 토큰이 없을 시
     if tokens.count == 0
       res.status(403).send "다시 로그인해주세요."
     else
       token = tokens.rows[0]
       checkUserIdxExists req, res, token.user_idx, (users) ->
+        # 해당 사용자가 없을 때
         if users.count == 0
           res.status(403).send "다시 로그인해주세요."
         else 
           user = users.rows[0]
           refreshToken req, res, user, (token) ->
             account = accountToReturn user, token
-            # 토큰을 확인하여 갱신하고 사용자 정보를 획득한 뒤 주어진 함수 실행
+            # 주어진 함수 실행
             func(account, user)
 
 module.exports = router

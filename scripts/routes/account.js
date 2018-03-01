@@ -21,9 +21,7 @@ Token = account.token;
 // 이메일 계정 존재 여부 확인
 router.get('/checkEmailExists/:email', function(req, res) {
   return checkEmailExists(req, res, req.params.email, function(users) {
-    return res.send({
-      count: users.count
-    });
+    return res.send(users);
   });
 });
 
@@ -38,7 +36,7 @@ router.post('/register', function(req, res) {
   });
 });
 
-// 이메일 계정 존재 여부 확인
+// 로그인 - 이메일과 비밀번호 확인
 router.get('/login', function(req, res) {
   return login(req, res);
 });
@@ -89,7 +87,7 @@ createAccount = function(req, res) {
 
 // 로그인 - 이메일과 비밀번호 확인
 login = function(req, res) {
-  return checkEmailExists(req, res, req.get('email', function(users) {
+  return checkEmailExists(req, res, req.get('email'), function(users) {
     var user;
     // 아이디가 없을 경우
     if (users.count === 0) {
@@ -106,7 +104,7 @@ login = function(req, res) {
         });
       }
     }
-  }));
+  });
 };
 
 // 토큰 삭제
@@ -145,7 +143,7 @@ refreshToken = function(req, res, user, func) {
   });
 };
 
-// 토큰 유효 확인
+// 토큰을 확인하여 갱신하고 사용자 정보를 획득한 뒤 주어진 함수 실행
 checkToken = function(req, res, token, func) {
   return Token.findAndCountAll({
     where: {
@@ -155,19 +153,21 @@ checkToken = function(req, res, token, func) {
       }
     }
   }).then(function(tokens) {
+    // 토큰이 없을 시
     if (tokens.count === 0) {
       return res.status(403).send("다시 로그인해주세요.");
     } else {
       token = tokens.rows[0];
       return checkUserIdxExists(req, res, token.user_idx, function(users) {
         var user;
+        // 해당 사용자가 없을 때
         if (users.count === 0) {
           return res.status(403).send("다시 로그인해주세요.");
         } else {
           user = users.rows[0];
           return refreshToken(req, res, user, function(token) {
             account = accountToReturn(user, token);
-            // 토큰을 확인하여 갱신하고 사용자 정보를 획득한 뒤 주어진 함수 실행
+            // 주어진 함수 실행
             return func(account, user);
           });
         }
