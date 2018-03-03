@@ -7,7 +7,7 @@ var bodyParser = require('body-parser');
 
 var index = require('./scripts/routes/index');
 var rt_image_upload = require('./scripts/routes/image_upload');
-var rt_account = require('./scripts/routes/account');
+var rt_account = require('./scripts/routes/account').router;
 
 var app = express();
 
