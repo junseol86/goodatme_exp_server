@@ -6,7 +6,7 @@ router = express.Router();
 
 router.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "email,password,token,hd1,hd2,hd3,hd4,hd5");
+  res.header("Access-Control-Allow-Headers", "Content-Type,email,password,token,hd1,hd2,hd3,hd4,hd5");
   res.header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT,DELETE");
   return next();
 });
