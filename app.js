@@ -9,6 +9,7 @@ var index = require('./scripts/routes/index');
 var rt_image_upload = require('./scripts/routes/image_upload');
 var rt_account = require('./scripts/routes/account').router;
 var rt_posting = require('./scripts/routes/posting').router;
+var rt_question = require('./scripts/routes/question').router;
 
 var app = express();
 
@@ -28,6 +29,7 @@ app.use('/', index);
 app.use('/image', rt_image_upload);
 app.use('/account', rt_account);
 app.use('/posting', rt_posting);
+app.use('/question', rt_question);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

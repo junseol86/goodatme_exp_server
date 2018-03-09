@@ -1,8 +1,8 @@
-var assert, sequaelize, util;
+var assert, sequelize, util;
 
 assert = require('assert');
 
-sequaelize = require('../secrets/database').getSql();
+sequelize = require('../secrets/database').getSql();
 
 util = require('../scripts/tools/util');
 
@@ -14,7 +14,7 @@ describe('PRINT', function() {
   console.log(util.createToken());
   console.log(util.hashMD5("HELLOeBcJne7I9C1wz6LHKabh"));
   console.log(util.dateBefore(7));
-  return sequaelize.authenticate().then(function() {
+  return sequelize.authenticate().then(function() {
     return console.log('successful');
   }).catch(function() {
     return console.log('failed');

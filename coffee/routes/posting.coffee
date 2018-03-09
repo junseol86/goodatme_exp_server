@@ -2,7 +2,7 @@ express = require 'express'
 router = express.Router()
 Sequelize = require 'sequelize'
 Op = Sequelize.Op
-sequaelize = require('../../secrets/database').getSql()
+sequelize = require('../../secrets/database').getSql()
 account_dbwork = require('./account').dbwork
 posting = require '../models/posting'
 Posting = posting.posting
@@ -11,11 +11,18 @@ Posting = posting.posting
 router.post '/posting', (req, res) ->
   dbwork.createPosting(req, res)
 
+# 포스팅 목록
+router.get '/posting', (req, res) ->
+  dbwork.postingList(req, res)
+
+# 포스팅 하나
+router.get '/posting/:idx', (req, res) ->
+  dbwork.postingSingle(req, res, req.params.idx)
+
 dbwork = {
   # 포스팅 작성
   createPosting: (req, res) ->
     account_dbwork.checkToken req, res, req.body.token, (account, user) ->
-      console.log(user.idx)
       Posting.create({
         user_idx: user.idx
         category: req.body.category
@@ -39,6 +46,28 @@ dbwork = {
         res.send {
           postingIdx: savedPosting.idx
           account: account
+        }
+
+  # 포스팅 목록
+  postingList: (req, res) ->
+    Posting.findAll({
+      limit: 5
+      order: [
+        ['idx', 'DESC']
+      ]
+      })
+    .then (postings) ->
+      res.send postings
+
+  postingSingle: (req, res, idx) ->
+    Posting.findOne({
+      where: {idx: idx}
+    }).then (posting) ->
+      account_dbwork.checkUserIdxExists req, res, posting.user_idx, (users) ->
+        writer = if users.count == '' then '(삭제된 사용자)' else users.rows[0].nickname
+        res.send {
+          writer: writer
+          posting: posting
         }
 }
 

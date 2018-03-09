@@ -79,6 +79,10 @@ module.exports = {
     importance: {
       type: Sequelize.INTEGER,
       defaultValue: 0
+    },
+    views: {
+      type: Sequelize.INTEGER,
+      defaultValue: 0
     }
   })
 };

@@ -22,5 +22,6 @@ module.exports = {
     image: {type: Sequelize.STRING}
     hashtags: {type: Sequelize.STRING, allowNull: false}
     importance: {type: Sequelize.INTEGER, defaultValue: 0}
+    views: {type: Sequelize.INTEGER, defaultValue: 0}
   }
 }

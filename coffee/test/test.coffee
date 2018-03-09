@@ -1,5 +1,5 @@
 assert = require 'assert'
-sequaelize = require('../secrets/database').getSql()
+sequelize = require('../secrets/database').getSql()
 util = require '../scripts/tools/util'
 
 describe 'PRINT', () ->
@@ -10,7 +10,7 @@ describe 'PRINT', () ->
   console.log util.createToken()
   console.log util.hashMD5 "HELLOeBcJne7I9C1wz6LHKabh"
   console.log util.dateBefore 7
-  sequaelize.authenticate().then(() ->
+  sequelize.authenticate().then(() ->
     console.log 'successful').catch(() ->
     console.log 'failed')
     

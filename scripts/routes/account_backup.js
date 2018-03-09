@@ -1,4 +1,4 @@
-var Op, Sequelize, Token, User, account, accountToReturn, checkEmailExists, checkToken, checkUserIdxExists, createAccount, express, login, refreshToken, removeToken, router, sequaelize, util;
+var Op, Sequelize, Token, User, account, accountToReturn, checkEmailExists, checkToken, checkUserIdxExists, createAccount, express, login, refreshToken, removeToken, router, sequelize, util;
 
 express = require('express');
 
@@ -8,7 +8,7 @@ Sequelize = require('sequelize');
 
 Op = Sequelize.Op;
 
-sequaelize = require('../../secrets/database').getSql();
+sequelize = require('../../secrets/database').getSql();
 
 util = require('../tools/util');
 
