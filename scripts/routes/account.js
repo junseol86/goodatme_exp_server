@@ -48,6 +48,16 @@ router.get('/access', function(req, res) {
   });
 });
 
+//유저 모양 변경
+router.put('/shape', function(req, res) {
+  return dbwork.updateShape(req, res);
+});
+
+//유저 색 변경
+router.put('/color', function(req, res) {
+  return dbwork.updateColor(req, res);
+});
+
 dbwork = {
   // 인덱스 계정 존재 여부 확인
   checkUserIdxExists: function(req, res, idx, func) {
@@ -122,6 +132,7 @@ dbwork = {
         nickname: user.nickname,
         type: user.type,
         shape: user.shape,
+        shape_sbsc: user.shape_sbsc,
         color_str: user.color_str,
         color_r: user.color_r,
         color_g: user.color_g,
@@ -175,6 +186,45 @@ dbwork = {
           }
         });
       }
+    });
+  },
+  //유저 모양 변경
+  updateShape: function(req, res) {
+    var _this;
+    _this = this;
+    return _this.checkToken(req, res, req.body.token, function(account, user) {
+      return User.update({
+        shape: req.body.shape
+      }, {
+        where: {
+          idx: user.idx
+        }
+      }).then(function() {
+        return _this.checkToken(req, res, account.token, function(account, user) {
+          return res.send(account);
+        });
+      });
+    });
+  },
+  //유저 색 변경
+  updateColor: function(req, res) {
+    var _this;
+    _this = this;
+    return _this.checkToken(req, res, req.body.token, function(account, user) {
+      return User.update({
+        color_str: req.body.color_str,
+        color_r: req.body.color_r,
+        color_g: req.body.color_g,
+        color_b: req.body.color_b
+      }, {
+        where: {
+          idx: user.idx
+        }
+      }).then(function() {
+        return _this.checkToken(req, res, account.token, function(account, user) {
+          return res.send(account);
+        });
+      });
     });
   }
 };

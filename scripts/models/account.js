@@ -40,17 +40,25 @@ module.exports = {
     shape: {
       type: Sequelize.STRING
     },
+    shape_sbsc: {
+      type: Sequelize.STRING,
+      default: ''
+    },
     color_str: {
-      type: Sequelize.STRING
+      type: Sequelize.STRING,
+      default: '128-128-128'
     },
     color_r: {
-      type: Sequelize.INTEGER
+      type: Sequelize.INTEGER,
+      default: 1
     },
     color_g: {
-      type: Sequelize.INTEGER
+      type: Sequelize.INTEGER,
+      default: 1
     },
     color_b: {
-      type: Sequelize.INTEGER
+      type: Sequelize.INTEGER,
+      default: 1
     }
   }),
   token: sqlz.define('token', {

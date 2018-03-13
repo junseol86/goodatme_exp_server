@@ -30,6 +30,14 @@ router.get '/access', (req, res) ->
   dbwork.checkToken req, res, req.get('token'), (account, user) ->
     res.send account
 
+#유저 모양 변경
+router.put '/shape', (req, res) ->
+  dbwork.updateShape req, res
+
+#유저 색 변경
+router.put '/color', (req, res) ->
+  dbwork.updateColor req, res
+
 dbwork = {
 
   # 인덱스 계정 존재 여부 확인
@@ -84,6 +92,7 @@ dbwork = {
         nickname: user.nickname
         type: user.type
         shape: user.shape
+        shape_sbsc: user.shape_sbsc
         color_str: user.color_str
         color_r: user.color_r
         color_g: user.color_g
@@ -128,6 +137,36 @@ dbwork = {
               # 주어진 함수 실행
               func(account, user)
 
+  #유저 모양 변경
+  updateShape: (req, res) ->
+    _this = this
+    _this.checkToken req, res, req.body.token, (account, user) ->
+      User.update({
+        shape: req.body.shape
+      }, {
+        where: {
+          idx: user.idx
+        }
+      }).then () ->
+        _this.checkToken req, res, account.token, (account, user) ->
+          res.send account
+
+  #유저 색 변경
+  updateColor: (req, res) ->
+    _this = this
+    _this.checkToken req, res, req.body.token, (account, user) ->
+      User.update({
+        color_str: req.body.color_str,
+        color_r: req.body.color_r,
+        color_g: req.body.color_g,
+        color_b: req.body.color_b
+      }, {
+        where: {
+          idx: user.idx
+        }
+      }).then () ->
+        _this.checkToken req, res, account.token, (account, user) ->
+          res.send account
 }
 
 module.exports = {
