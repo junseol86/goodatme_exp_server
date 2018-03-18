@@ -58,6 +58,11 @@ router.put('/color', function(req, res) {
   return dbwork.updateColor(req, res);
 });
 
+//유저 구독 모양 변경
+router.put('/sbsc', function(req, res) {
+  return dbwork.updateShapeSbsc(req, res);
+});
+
 dbwork = {
   // 인덱스 계정 존재 여부 확인
   checkUserIdxExists: function(req, res, idx, func) {
@@ -216,6 +221,24 @@ dbwork = {
         color_r: req.body.color_r,
         color_g: req.body.color_g,
         color_b: req.body.color_b
+      }, {
+        where: {
+          idx: user.idx
+        }
+      }).then(function() {
+        return _this.checkToken(req, res, account.token, function(account, user) {
+          return res.send(account);
+        });
+      });
+    });
+  },
+  //유저 구독 모양 변겅
+  updateShapeSbsc: function(req, res) {
+    var _this;
+    _this = this;
+    return _this.checkToken(req, res, req.body.token, function(account, user) {
+      return User.update({
+        shape_sbsc: req.body.shape_sbsc
       }, {
         where: {
           idx: user.idx

@@ -15,7 +15,7 @@ question = require('../models/question');
 Question = question.question;
 
 // 설문 목록
-router.get('/question', function(req, res) {
+router.get('', function(req, res) {
   return dbwork.questionList(req, res);
 });
 

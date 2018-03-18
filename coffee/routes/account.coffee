@@ -38,6 +38,10 @@ router.put '/shape', (req, res) ->
 router.put '/color', (req, res) ->
   dbwork.updateColor req, res
 
+#유저 구독 모양 변경
+router.put '/sbsc', (req, res) ->
+  dbwork.updateShapeSbsc req, res
+
 dbwork = {
 
   # 인덱스 계정 존재 여부 확인
@@ -160,6 +164,20 @@ dbwork = {
         color_r: req.body.color_r,
         color_g: req.body.color_g,
         color_b: req.body.color_b
+      }, {
+        where: {
+          idx: user.idx
+        }
+      }).then () ->
+        _this.checkToken req, res, account.token, (account, user) ->
+          res.send account
+
+  #유저 구독 모양 변겅
+  updateShapeSbsc: (req, res) ->
+    _this = this
+    _this.checkToken req, res, req.body.token, (account, user) ->
+      User.update({
+        shape_sbsc: req.body.shape_sbsc,
       }, {
         where: {
           idx: user.idx

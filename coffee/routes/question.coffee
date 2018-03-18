@@ -8,7 +8,7 @@ question = require '../models/question'
 Question = question.question
 
 # 설문 목록
-router.get '/question', (req, res) ->
+router.get '', (req, res) ->
   dbwork.questionList(req, res)
 
 dbwork = {
