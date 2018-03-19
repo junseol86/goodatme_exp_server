@@ -5,6 +5,7 @@ module.exports = {
   posting: sqlz.define 'posting', {
     idx: {type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true}
     user_idx: {type: Sequelize.INTEGER, allowNull: false}
+    editor: {type: Sequelize.STRING, default: ''}
     category: {type: Sequelize.STRING, allowNull: false}
     sub_category: {type: Sequelize.STRING, allowNull: false}
     rgn_do: {type: Sequelize.STRING, allowNull: false}

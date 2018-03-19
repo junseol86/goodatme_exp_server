@@ -35,6 +35,7 @@ dbwork = {
     account_dbwork.checkToken req, res, req.body.token, (account, user) ->
       Posting.create({
         user_idx: user.idx
+        editor: user.nickname
         category: req.body.category
         sub_category: req.body.sub_category
         rgn_do: req.body.rgn_do
@@ -101,13 +102,11 @@ dbwork = {
     if req.body.shape_sbsc != undefined
       cond = ""
       subscs = req.body.shape_sbsc.split(',')
-      shuffled = _.shuffle subscs
-      shuffled.map (shape, idx) ->
-        if (shape != '')
-          if (idx != 0)
-            cond += ','
-          cond += "'#{shape}'"
-      order.push sequelize.literal "FIELD(shape, #{cond}) DESC"
+      cond = "`shape` in ("
+      subscs.map (it, idx) ->
+        cond += (if idx == 0 then "'" else ", '") + it + "'"
+      cond += ") DESC"
+      order.push sequelize.literal cond      
     return order
 
 
@@ -117,7 +116,9 @@ dbwork = {
     order = _this.setOrder(req)
     order.unshift ['createdAt', 'DESC']
     Posting.findAll({
-     order: order
+      order: order
+      offset: parseInt req.body.offset * parseInt req.body.limit
+      limit: parseInt req.body.limit
       })
     .then (postings) ->
       res.send postings
@@ -139,6 +140,8 @@ dbwork = {
     Posting.findAll({
       where: where
       order: order
+      offset: parseInt req.body.offset * parseInt req.body.limit
+      limit: parseInt req.body.limit
       })
     .then (postings) ->
       res.send postings

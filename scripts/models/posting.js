@@ -15,6 +15,10 @@ module.exports = {
       type: Sequelize.INTEGER,
       allowNull: false
     },
+    editor: {
+      type: Sequelize.STRING,
+      default: ''
+    },
     category: {
       type: Sequelize.STRING,
       allowNull: false

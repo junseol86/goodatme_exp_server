@@ -49,6 +49,7 @@ dbwork = {
     return account_dbwork.checkToken(req, res, req.body.token, function(account, user) {
       return Posting.create({
         user_idx: user.idx,
+        editor: user.nickname,
         category: req.body.category,
         sub_category: req.body.sub_category,
         rgn_do: req.body.rgn_do,
@@ -101,7 +102,7 @@ dbwork = {
   },
   // 모양, 색, 구독정보가 있는 사용자부터
   setOrder: function(req) {
-    var cond, order, shuffled, subscs;
+    var cond, order, subscs;
     // 대시보드 상단 슬라이드 또는 카테고리별 대표 6 포스팅일 경우
     order = [];
     if (req.body.importance !== void 0) {
@@ -124,16 +125,12 @@ dbwork = {
     if (req.body.shape_sbsc !== void 0) {
       cond = "";
       subscs = req.body.shape_sbsc.split(',');
-      shuffled = _.shuffle(subscs);
-      shuffled.map(function(shape, idx) {
-        if (shape !== '') {
-          if (idx !== 0) {
-            cond += ',';
-          }
-          return cond += `'${shape}'`;
-        }
+      cond = "`shape` in (";
+      subscs.map(function(it, idx) {
+        return cond += (idx === 0 ? "'" : ", '") + it + "'";
       });
-      order.push(sequelize.literal(`FIELD(shape, ${cond}) DESC`));
+      cond += ") DESC";
+      order.push(sequelize.literal(cond));
     }
     return order;
   },
@@ -144,7 +141,9 @@ dbwork = {
     order = _this.setOrder(req);
     order.unshift(['createdAt', 'DESC']);
     return Posting.findAll({
-      order: order
+      order: order,
+      offset: parseInt(req.body.offset * parseInt(req.body.limit)),
+      limit: parseInt(req.body.limit)
     }).then(function(postings) {
       return res.send(postings);
     });
@@ -171,7 +170,9 @@ dbwork = {
     order = _this.setOrder(req);
     return Posting.findAll({
       where: where,
-      order: order
+      order: order,
+      offset: parseInt(req.body.offset * parseInt(req.body.limit)),
+      limit: parseInt(req.body.limit)
     }).then(function(postings) {
       return res.send(postings);
     });
