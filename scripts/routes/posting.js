@@ -33,14 +33,24 @@ router.get('/:idx', function(req, res) {
   return dbwork.postingSingle(req, res, req.params.idx);
 });
 
-// 포스팅 목록
+// 포스팅 카테고리별
 router.post('/category', function(req, res) {
   return dbwork.postingsByCategory(req, res);
 });
 
-// 포스팅 목록
+// 포스팅 달력형
 router.post('/calendar', function(req, res) {
   return dbwork.postingsByCalendar(req, res);
+});
+
+// 포스팅 무작위로 가져오기
+router.post('/random', function(req, res) {
+  return dbwork.postingsByRandom(req, res);
+});
+
+// 포스팅 검색
+router.post('/search', function(req, res) {
+  return dbwork.postingsBySearch(req, res);
 });
 
 dbwork = {
@@ -172,6 +182,37 @@ dbwork = {
       where: where,
       order: order,
       offset: parseInt(req.body.offset * parseInt(req.body.limit)),
+      limit: parseInt(req.body.limit)
+    }).then(function(postings) {
+      return res.send(postings);
+    });
+  },
+  // 무작위로 반환
+  postingsByRandom: function(req, res) {
+    var _this;
+    _this = this;
+    return Posting.findAll({
+      order: sequelize.random(),
+      limit: parseInt(req.body.limit)
+    }).then(function(postings) {
+      return res.send(postings);
+    });
+  },
+  // 검색어에 의해 반환
+  postingsBySearch: function(req, res) {
+    var _this, where;
+    _this = this;
+    where = `category LIKE '%${req.body.category}%' AND (`;
+    req.body.search.split(' ').map(function(keyword, idx) {
+      if (idx !== 0) {
+        where += ") AND (";
+      }
+      return where += `rgn_do LIKE '%${keyword}%' OR rgn_sgg LIKE '%${keyword}%' OR rgn_emd LIKE '%${keyword}%' OR place LIKE '%${keyword}%' OR title LIKE '%${keyword}%' OR brief LIKE '%${keyword}%' OR hashtags LIKE '%${keyword}%'`;
+    });
+    where += ")";
+    return Posting.findAll({
+      where: sequelize.literal(where),
+      order: sequelize.random(),
       limit: parseInt(req.body.limit)
     }).then(function(postings) {
       return res.send(postings);

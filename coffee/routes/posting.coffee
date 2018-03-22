@@ -21,13 +21,21 @@ router.get '/:idx', (req, res) ->
   dbwork.postingSingle(req, res, req.params.idx)
 
 
-# 포스팅 목록
+# 포스팅 카테고리별
 router.post '/category', (req, res) ->
   dbwork.postingsByCategory(req, res)
 
-# 포스팅 목록
+# 포스팅 달력형
 router.post '/calendar', (req, res) ->
   dbwork.postingsByCalendar(req, res)
+
+# 포스팅 무작위로 가져오기
+router.post '/random', (req, res) ->
+  dbwork.postingsByRandom(req, res)
+
+# 포스팅 검색
+router.post '/search', (req, res) ->
+  dbwork.postingsBySearch(req, res)
 
 dbwork = {
   # 포스팅 작성
@@ -141,6 +149,42 @@ dbwork = {
       where: where
       order: order
       offset: parseInt req.body.offset * parseInt req.body.limit
+      limit: parseInt req.body.limit
+      })
+    .then (postings) ->
+      res.send postings
+
+  # 무작위로 반환
+  postingsByRandom: (req, res) ->
+    _this = this
+    Posting.findAll({
+      order: sequelize.random()
+      limit: parseInt req.body.limit
+      })
+    .then (postings) ->
+      res.send postings
+
+  # 검색어에 의해 반환
+  postingsBySearch: (req, res) ->
+    _this = this
+    where = "
+    category LIKE '%#{req.body.category}%' AND ("
+    req.body.search.split(' ').map (keyword, idx) ->
+      if idx != 0
+        where += ") AND ("
+      where += "
+      rgn_do LIKE '%#{keyword}%'
+      OR rgn_sgg LIKE '%#{keyword}%'
+      OR rgn_emd LIKE '%#{keyword}%'
+      OR place LIKE '%#{keyword}%'
+      OR title LIKE '%#{keyword}%'
+      OR brief LIKE '%#{keyword}%'
+      OR hashtags LIKE '%#{keyword}%'
+      "
+    where += ")"
+    Posting.findAll({
+      where: sequelize.literal where
+      order: sequelize.random()
       limit: parseInt req.body.limit
       })
     .then (postings) ->
