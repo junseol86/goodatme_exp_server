@@ -213,7 +213,8 @@ dbwork = {
     return Posting.findAll({
       where: sequelize.literal(where),
       order: sequelize.random(),
-      limit: parseInt(req.body.limit)
+      limit: parseInt(req.body.limit),
+      offset: parseInt(req.body.offset * parseInt(req.body.limit))
     }).then(function(postings) {
       return res.send(postings);
     });

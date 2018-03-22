@@ -186,6 +186,7 @@ dbwork = {
       where: sequelize.literal where
       order: sequelize.random()
       limit: parseInt req.body.limit
+      offset: parseInt req.body.offset * parseInt req.body.limit
       })
     .then (postings) ->
       res.send postings
