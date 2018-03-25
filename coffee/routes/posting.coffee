@@ -134,7 +134,7 @@ dbwork = {
   # eat, play, work 중 하나로 들어왔을 때 리스트
   postingsByCategory: (req, res) ->
     _this = this
-    where = {category: req.body.category}
+    where = if req.body.category != undefined then {category: req.body.category} else {}
     if req.body.importance != undefined
       if req.body.importance > 0
         where.importance = {

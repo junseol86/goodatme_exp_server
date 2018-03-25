@@ -162,9 +162,9 @@ dbwork = {
   postingsByCategory: function(req, res) {
     var _this, order, where;
     _this = this;
-    where = {
+    where = req.body.category !== void 0 ? {
       category: req.body.category
-    };
+    } : {};
     if (req.body.importance !== void 0) {
       if (req.body.importance > 0) {
         where.importance = {

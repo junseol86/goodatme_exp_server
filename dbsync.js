@@ -2,6 +2,7 @@
 const account = require('./scripts/models/account');
 const posting = require('./scripts/models/posting');
 const question = require('./scripts/models/question');
+const favorite = require('./scripts/models/favorite');
 
 // var User = account.user;
 // User.sync({force: true}).then(() => {
@@ -18,4 +19,8 @@ const question = require('./scripts/models/question');
 // var Question = question.question;
 // Question.sync({force: true}).then(() => {
 //   console.log("TABLE QUESTION CREATED");
+// });
+// var Favorite = favorite.favorite;
+// Favorite.sync({force: true}).then(() => {
+//   console.log("FAVORITE QUESTION CREATED");
 // });

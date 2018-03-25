@@ -10,6 +10,7 @@ var rt_image_upload = require('./scripts/routes/image_upload');
 var rt_account = require('./scripts/routes/account').router;
 var rt_posting = require('./scripts/routes/posting').router;
 var rt_question = require('./scripts/routes/question').router;
+var rt_favorite = require('./scripts/routes/favorite').router;
 
 var app = express();
 
@@ -30,6 +31,7 @@ app.use('/image', rt_image_upload);
 app.use('/account', rt_account);
 app.use('/posting', rt_posting);
 app.use('/question', rt_question);
+app.use('/favorite', rt_favorite);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
