@@ -23,6 +23,10 @@ Posting.belongsTo Favorite, {
 router.post '/list', (req, res) ->
   dbwork.list req, res
 
+# 특정 게시물을 담아두었는지 확인
+router.post '/check', (req, res) ->
+  dbwork.check req, res
+
 # 특정 게시물에 특정 사용자의 좋아요 토글
 router.put '/toggle', (req, res) ->
   dbwork.toggle req, res
@@ -36,6 +40,9 @@ dbwork = {
           user_idx: user.idx
         } 
         include : [Posting]       
+        offset: parseInt req.body.offset * parseInt req.body.limit
+        limit: parseInt req.body.limit
+        order: [['createdAt', 'DESC']]
       })
       .then (favorites) ->
         res.send {
@@ -43,8 +50,26 @@ dbwork = {
           favorites: favorites
         }
 
+  # 특정 게시물을 담아두었는지 확인
+  check: (req, res) ->
+    account_dbwork.checkToken req, res, req.body.token, (account, user) ->
+      checkWork req, res, account, user
+
+  checkWork: (req, res, account, user) ->
+    favorite = Favorite.findAndCountAll({
+      where: {
+        user_idx: user.idx
+        posting_idx: req.body.posting_idx
+        }
+      }).then (favorites) ->
+        res.send {
+          account: account
+          count: favorites.count
+        }
+
   # 특정 게시물에 특정 사용자의 좋아요 토글
   toggle: (req, res) ->
+    _this = this
     account_dbwork.checkToken req, res, req.body.token, (account, user) ->
       favorite = Favorite.findAndCountAll({
         where: {
@@ -58,17 +83,18 @@ dbwork = {
               user_idx: user.idx
               posting_idx: req.body.posting_idx
             }).then () ->
-              favorite = Favorite.findAndCountAll({
-                where: {
-                  user_idx: user.idx
-                  posting_idx: req.body.posting_idx
-                  }
-                })
-                .then (favorites) ->
-                  res.send {
-                    account: account
-                    count: favorites.count
-                  }
+              checkWork req, res, account, user
+              # favorite = Favorite.findAndCountAll({
+              #   where: {
+              #     user_idx: user.idx
+              #     posting_idx: req.body.posting_idx
+              #     }
+              #   })
+              #   .then (favorites) ->
+              #     res.send {
+              #       account: account
+              #       count: favorites.count
+              #     }
           else
             Favorite.destroy({
               where: {
@@ -76,17 +102,18 @@ dbwork = {
                 posting_idx: req.body.posting_idx
                 }
             }).then () ->
-              favorite = Favorite.findAndCountAll({
-                where: {
-                  user_idx: user.idx
-                  posting_idx: req.body.posting_idx
-                  }
-                })
-                .then (favorites) ->
-                  res.send {
-                    account: account
-                    count: favorites.count
-                  }
+              checkWork req, res, account, user
+              # favorite = Favorite.findAndCountAll({
+              #   where: {
+              #     user_idx: user.idx
+              #     posting_idx: req.body.posting_idx
+              #     }
+              #   })
+              #   .then (favorites) ->
+              #     res.send {
+              #       account: account
+              #       count: favorites.count
+              #     }
 }
 
 module.exports = {
