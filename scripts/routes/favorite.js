@@ -69,9 +69,8 @@ dbwork = {
   },
   // 특정 게시물을 담아두었는지 확인
   check: function(req, res) {
-    _this = this
     return account_dbwork.checkToken(req, res, req.body.token, function(account, user) {
-      return _this.checkWork(req, res, account, user);
+      return checkWork(req, res, account, user);
     });
   },
   checkWork: function(req, res, account, user) {
@@ -103,7 +102,7 @@ dbwork = {
             user_idx: user.idx,
             posting_idx: req.body.posting_idx
           }).then(function() {
-            return _this.checkWork(req, res, account, user);
+            return checkWork(req, res, account, user);
           });
         } else {
           // favorite = Favorite.findAndCountAll({
@@ -123,7 +122,7 @@ dbwork = {
               posting_idx: req.body.posting_idx
             }
           }).then(function() {
-            return _this.checkWork(req, res, account, user);
+            return checkWork(req, res, account, user);
           });
         }
       });
