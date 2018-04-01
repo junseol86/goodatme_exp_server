@@ -21,7 +21,7 @@ router.post '/write', (req, res) ->
   dbwork.write req, res
 
 #댓글 삭제
-router.delete '/delete', (req, res) ->
+router.post '/delete', (req, res) ->
   dbwork.delete req, res
 
 dbwork = {
@@ -40,8 +40,13 @@ dbwork = {
         }
       else
         account_dbwork.checkToken req, res, token, (account, user) ->
+          result = []
+          comments.map (it) ->
+            if it.user_idx == user.idx
+              it.dataValues.mine = true
+            result.push it
           res.send {
-            comments: comments
+            comments: result
             account: account
           }
 

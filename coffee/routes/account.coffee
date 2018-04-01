@@ -11,7 +11,9 @@ Token = account.token
 # 이메일 계정 존재 여부 확인
 router.get '/checkEmailExists/:email', (req, res) ->
   dbwork.checkEmailExists req, res, req.params.email, (users) ->
-    res.send users
+    res.send {
+      count: users.count
+      }
 
 # 이메일 계정 존재 여부 확인 후 없으면 생성
 router.post '/register', (req, res) ->
@@ -61,6 +63,9 @@ dbwork = {
     User.create({
       email: req.body.email
       nickname: req.body.nickname
+      age: req.body.age
+      sex: req.body.sex
+      phone: req.body.phone
       salt: salt
       hash: hash
     }).then (savedUser) ->

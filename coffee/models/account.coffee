@@ -17,6 +17,9 @@ module.exports = {
     color_r: {type: Sequelize.INTEGER, default: 1}
     color_g: {type: Sequelize.INTEGER, default: 1}
     color_b: {type: Sequelize.INTEGER, default: 1}
+    age: {type: Sequelize.INTEGER, default: 20}
+    sex: {type: Sequelize.STRING, default: ''}
+    phone: {type: Sequelize.STRING, default: ''}
   }
   token: sqlz.define 'token', {
     idx:  {type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true}

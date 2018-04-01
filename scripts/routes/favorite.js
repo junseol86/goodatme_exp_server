@@ -69,8 +69,10 @@ dbwork = {
   },
   // 특정 게시물을 담아두었는지 확인
   check: function(req, res) {
+    var _this;
+    _this = this;
     return account_dbwork.checkToken(req, res, req.body.token, function(account, user) {
-      return checkWork(req, res, account, user);
+      return _this.checkWork(req, res, account, user);
     });
   },
   checkWork: function(req, res, account, user) {
@@ -102,27 +104,16 @@ dbwork = {
             user_idx: user.idx,
             posting_idx: req.body.posting_idx
           }).then(function() {
-            return checkWork(req, res, account, user);
+            return _this.checkWork(req, res, account, user);
           });
         } else {
-          // favorite = Favorite.findAndCountAll({
-          //   where: {
-          //     user_idx: user.idx
-          //     posting_idx: req.body.posting_idx
-          //     }
-          //   })
-          //   .then (favorites) ->
-          //     res.send {
-          //       account: account
-          //       count: favorites.count
-          //     }
           return Favorite.destroy({
             where: {
               user_idx: user.idx,
               posting_idx: req.body.posting_idx
             }
           }).then(function() {
-            return checkWork(req, res, account, user);
+            return _this.checkWork(req, res, account, user);
           });
         }
       });
@@ -130,17 +121,6 @@ dbwork = {
   }
 };
 
-// favorite = Favorite.findAndCountAll({
-//   where: {
-//     user_idx: user.idx
-//     posting_idx: req.body.posting_idx
-//     }
-//   })
-//   .then (favorites) ->
-//     res.send {
-//       account: account
-//       count: favorites.count
-//     }
 module.exports = {
   router: router,
   dbwork: dbwork

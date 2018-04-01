@@ -23,6 +23,11 @@ router.post('', function(req, res) {
   return dbwork.createPosting(req, res);
 });
 
+// 포스팅 삭제
+router.post('/delete', function(req, res) {
+  return dbwork.deletePosting(req, res);
+});
+
 // 포스팅 목록
 router.get('', function(req, res) {
   return dbwork.postingList(req, res);
@@ -83,6 +88,24 @@ dbwork = {
           account: account
         });
       });
+    });
+  },
+  //포스팅 삭제
+  deletePosting: function(req, res) {
+    return account_dbwork.checkToken(req, res, req.body.token, function(account, user) {
+      if (user.type !== 'ADMIN') {
+        return res.status(403).send('권한이 없습니다.');
+      } else {
+        return Posting.destroy({
+          where: {
+            idx: req.body.posting_idx
+          }
+        }).then(function() {
+          return res.send({
+            account: account
+          });
+        });
+      }
     });
   },
   // 포스팅 목록

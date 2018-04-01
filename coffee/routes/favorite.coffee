@@ -52,8 +52,9 @@ dbwork = {
 
   # 특정 게시물을 담아두었는지 확인
   check: (req, res) ->
+    _this = this
     account_dbwork.checkToken req, res, req.body.token, (account, user) ->
-      checkWork req, res, account, user
+      _this.checkWork req, res, account, user
 
   checkWork: (req, res, account, user) ->
     favorite = Favorite.findAndCountAll({
@@ -83,18 +84,7 @@ dbwork = {
               user_idx: user.idx
               posting_idx: req.body.posting_idx
             }).then () ->
-              checkWork req, res, account, user
-              # favorite = Favorite.findAndCountAll({
-              #   where: {
-              #     user_idx: user.idx
-              #     posting_idx: req.body.posting_idx
-              #     }
-              #   })
-              #   .then (favorites) ->
-              #     res.send {
-              #       account: account
-              #       count: favorites.count
-              #     }
+              _this.checkWork req, res, account, user
           else
             Favorite.destroy({
               where: {
@@ -102,18 +92,7 @@ dbwork = {
                 posting_idx: req.body.posting_idx
                 }
             }).then () ->
-              checkWork req, res, account, user
-              # favorite = Favorite.findAndCountAll({
-              #   where: {
-              #     user_idx: user.idx
-              #     posting_idx: req.body.posting_idx
-              #     }
-              #   })
-              #   .then (favorites) ->
-              #     res.send {
-              #       account: account
-              #       count: favorites.count
-              #     }
+              _this.checkWork req, res, account, user
 }
 
 module.exports = {

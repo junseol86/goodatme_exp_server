@@ -33,7 +33,7 @@ router.post('/write', function(req, res) {
 });
 
 //댓글 삭제
-router.delete('/delete', function(req, res) {
+router.post('/delete', function(req, res) {
   return dbwork.delete(req, res);
 });
 
@@ -52,8 +52,16 @@ dbwork = {
         });
       } else {
         return account_dbwork.checkToken(req, res, token, function(account, user) {
+          var result;
+          result = [];
+          comments.map(function(it) {
+            if (it.user_idx === user.idx) {
+              it.dataValues.mine = true;
+            }
+            return result.push(it);
+          });
           return res.send({
-            comments: comments,
+            comments: result,
             account: account
           });
         });

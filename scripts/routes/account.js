@@ -21,7 +21,9 @@ Token = account.token;
 // 이메일 계정 존재 여부 확인
 router.get('/checkEmailExists/:email', function(req, res) {
   return dbwork.checkEmailExists(req, res, req.params.email, function(users) {
-    return res.send(users);
+    return res.send({
+      count: users.count
+    });
   });
 });
 
@@ -92,6 +94,9 @@ dbwork = {
     return User.create({
       email: req.body.email,
       nickname: req.body.nickname,
+      age: req.body.age,
+      sex: req.body.sex,
+      phone: req.body.phone,
       salt: salt,
       hash: hash
     }).then(function(savedUser) {

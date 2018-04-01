@@ -12,6 +12,10 @@ Posting = posting.posting
 router.post '', (req, res) ->
   dbwork.createPosting(req, res)
 
+# 포스팅 삭제
+router.post '/delete', (req, res) ->
+  dbwork.deletePosting(req, res)
+
 # 포스팅 목록
 router.get '', (req, res) ->
   dbwork.postingList(req, res)
@@ -66,6 +70,18 @@ dbwork = {
           postingIdx: savedPosting.idx
           account: account
         }
+
+  #포스팅 삭제
+  deletePosting: (req, res) ->
+    account_dbwork.checkToken req, res, req.body.token, (account, user) ->
+      if user.type != 'ADMIN'
+        res.status(403).send '권한이 없습니다.'
+      else
+        Posting.destroy({where: {idx: req.body.posting_idx}})
+        .then () ->
+          res.send {
+            account: account
+          }
 
   # 포스팅 목록
   postingList: (req, res) ->
