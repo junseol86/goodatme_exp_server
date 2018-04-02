@@ -16,6 +16,10 @@ router.post '', (req, res) ->
 router.post '/delete', (req, res) ->
   dbwork.deletePosting(req, res)
 
+# 포스팅 삭제
+router.post '/modify', (req, res) ->
+  dbwork.modifyPosting(req, res)
+
 # 포스팅 목록
 router.get '', (req, res) ->
   dbwork.postingList(req, res)
@@ -28,6 +32,10 @@ router.get '/:idx', (req, res) ->
 # 포스팅 카테고리별
 router.post '/category', (req, res) ->
   dbwork.postingsByCategory(req, res)
+
+# 포스팅 카테고리별 대시보드
+router.post '/top6', (req, res) ->
+  dbwork.postingsTop6(req, res)
 
 # 포스팅 달력형
 router.post '/calendar', (req, res) ->
@@ -82,6 +90,41 @@ dbwork = {
           res.send {
             account: account
           }
+
+  #포스팅 수정
+  modifyPosting: (req, res) ->
+    account_dbwork.checkToken req, res, req.body.token, (account, user) ->
+      if user.type != 'ADMIN'
+        res.status(403).send '권한이 없습니다.'
+      else
+        Posting.update({
+          user_idx: user.idx          
+          editor: user.nickname
+          category: req.body.category
+          sub_category: req.body.sub_category
+          rgn_do: req.body.rgn_do
+          rgn_sgg: req.body.rgn_sgg
+          rgn_emd: req.body.rgn_emd
+          rgn_ri: req.body.rgn_ri
+          shape: req.body.shape
+          color_r: req.body.color_r
+          color_g: req.body.color_g
+          color_b: req.body.color_b
+          place: req.body.place
+          title: req.body.title
+          brief: req.body.brief
+          content: req.body.content
+          image: req.body.image
+          hashtags: req.body.hashtags
+          importance: req.body.importance
+        }, {
+          where: {
+            idx: req.body.idx
+            }
+          }
+        ).then () ->
+          res.send account
+
 
   # 포스팅 목록
   postingList: (req, res) ->
@@ -169,6 +212,37 @@ dbwork = {
       })
     .then (postings) ->
       res.send postings
+
+  # 대시보드 카테고리별 6개 포스팅
+  postingsTop6: (req, res) ->
+    _this = this
+    where = {
+      category: req.body.category
+      importance: {
+        $gt: 0
+      }
+    }
+    order = _this.setOrder(req)
+    Posting.findAll({
+      where: where
+      order: order
+      offset: 0
+      limit: 3
+      })
+    .then (postings) ->
+      order = _this.setOrder(req)
+      Posting.findAll({
+        where: {
+          category: req.body.category
+          importance: 0
+        },
+        order: order
+        offset: 0
+        limit: 3
+        })
+      .then (postings2) ->
+        postings = postings.concat postings2
+        res.send postings
 
   # 무작위로 반환
   postingsByRandom: (req, res) ->

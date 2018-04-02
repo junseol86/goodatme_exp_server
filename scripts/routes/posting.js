@@ -28,6 +28,11 @@ router.post('/delete', function(req, res) {
   return dbwork.deletePosting(req, res);
 });
 
+// 포스팅 삭제
+router.post('/modify', function(req, res) {
+  return dbwork.modifyPosting(req, res);
+});
+
 // 포스팅 목록
 router.get('', function(req, res) {
   return dbwork.postingList(req, res);
@@ -41,6 +46,11 @@ router.get('/:idx', function(req, res) {
 // 포스팅 카테고리별
 router.post('/category', function(req, res) {
   return dbwork.postingsByCategory(req, res);
+});
+
+// 포스팅 카테고리별 대시보드
+router.post('/top6', function(req, res) {
+  return dbwork.postingsTop6(req, res);
 });
 
 // 포스팅 달력형
@@ -104,6 +114,42 @@ dbwork = {
           return res.send({
             account: account
           });
+        });
+      }
+    });
+  },
+  //포스팅 수정
+  modifyPosting: function(req, res) {
+    return account_dbwork.checkToken(req, res, req.body.token, function(account, user) {
+      if (user.type !== 'ADMIN') {
+        return res.status(403).send('권한이 없습니다.');
+      } else {
+        return Posting.update({
+          user_idx: user.idx,
+          editor: user.nickname,
+          category: req.body.category,
+          sub_category: req.body.sub_category,
+          rgn_do: req.body.rgn_do,
+          rgn_sgg: req.body.rgn_sgg,
+          rgn_emd: req.body.rgn_emd,
+          rgn_ri: req.body.rgn_ri,
+          shape: req.body.shape,
+          color_r: req.body.color_r,
+          color_g: req.body.color_g,
+          color_b: req.body.color_b,
+          place: req.body.place,
+          title: req.body.title,
+          brief: req.body.brief,
+          content: req.body.content,
+          image: req.body.image,
+          hashtags: req.body.hashtags,
+          importance: req.body.importance
+        }, {
+          where: {
+            idx: req.body.idx
+          }
+        }).then(function() {
+          return res.send(account);
         });
       }
     });
@@ -208,6 +254,38 @@ dbwork = {
       limit: parseInt(req.body.limit)
     }).then(function(postings) {
       return res.send(postings);
+    });
+  },
+  // 대시보드 카테고리별 6개 포스팅
+  postingsTop6: function(req, res) {
+    var _this, order, where;
+    _this = this;
+    where = {
+      category: req.body.category,
+      importance: {
+        $gt: 0
+      }
+    };
+    order = _this.setOrder(req);
+    return Posting.findAll({
+      where: where,
+      order: order,
+      offset: 0,
+      limit: 3
+    }).then(function(postings) {
+      order = _this.setOrder(req);
+      return Posting.findAll({
+        where: {
+          category: req.body.category,
+          importance: 0
+        },
+        order: order,
+        offset: 0,
+        limit: 3
+      }).then(function(postings2) {
+        postings = postings.concat(postings2);
+        return res.send(postings);
+      });
     });
   },
   // 무작위로 반환
